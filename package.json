@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/serverless": "^3.12.20",
+    "serverless-offline": "^13.3.2",
+    "serverless-plugin-typescript": "^2.1.5",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../src/functions/createToken/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAO,IAAM,OAAO,GAAG,UAAO,KAAK;;QAClC,sBAAO;gBACL,UAAU,EAAE,GAAG;gBACf,IAAI,EAAE,IAAI,CAAC,SAAS,CAAC;oBACpB,OAAO,EAAE,gBAAgB;oBACzB,KAAK,EAAE,KAAK;iBACb,CAAC;aACF,EAAC;;KACF,CAAC;AARW,QAAA,OAAO,WAQlB"}

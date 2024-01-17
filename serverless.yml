@@ -1,0 +1,23 @@
+service: aws-node-http-api-project
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+functions:
+  create-token:
+    handler: index.createToken
+    events:
+      - httpApi:
+          path: /api/tokenizer/create-token
+          method: POST
+  get-card-info:
+    handler: index.getCardInfo
+    events:
+      - httpApi:
+          path: /api/tokenizer/card-info
+          method: get
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
