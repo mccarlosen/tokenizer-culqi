@@ -1,1 +1,0 @@
-{"version":3,"file":"handler.js","sourceRoot":"","sources":["../../../../src/functions/createToken/handler.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAO,MAAM,WAAW,GAAG,CAAO,KAAa,EAAE,EAAE;IAClD,OAAO;QACL,UAAU,EAAE,GAAG;QACf,IAAI,EAAE,IAAI,CAAC,SAAS,CACrB;YACE,OAAO,EAAE,gBAAgB;YACzB,KAAK,EAAE,KAAK;SACb,EACD,IAAI,EACJ,CAAC,CACC;KACF,CAAC;AACH,CAAC,CAAA,CAAC;AAZW,QAAA,WAAW,eAYtB"}
