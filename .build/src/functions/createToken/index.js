@@ -37,15 +37,63 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
+var headers_1 = require("../../utils/headers");
+var validator_1 = require("../../utils/validator");
 var handler = function (event) { return __awaiter(void 0, void 0, void 0, function () {
+    var contentType, data, rules, validation;
     return __generator(this, function (_a) {
-        return [2 /*return*/, {
-                statusCode: 200,
-                body: JSON.stringify({
-                    message: "Token created.",
-                    input: event,
-                }),
-            }];
+        if (!(0, headers_1.validateHeader)(event.headers, 'Authorization')) {
+            return [2 /*return*/, {
+                    statusCode: 400,
+                    body: JSON.stringify({ error: 'Bad Request.', message: 'Authorization header is missing.' })
+                }];
+        }
+        contentType = (0, headers_1.validateHeader)(event.headers, 'Content-Type');
+        if (!contentType) {
+            return [2 /*return*/, {
+                    statusCode: 400,
+                    body: JSON.stringify({ error: 'Bad Request.', message: 'Content-Type header is missing.' })
+                }];
+        }
+        if (contentType !== 'application/json') {
+            return [2 /*return*/, {
+                    statusCode: 400,
+                    body: JSON.stringify({ error: 'Bad Request.', message: 'The Content-Type must be set to application/json.' })
+                }];
+        }
+        try {
+            data = JSON.parse(event.body);
+            rules = {
+                card_number: 'required|numeric|min:13|max:16|luhnFormat',
+                cvv: 'required|numeric|min:3|max:4',
+                expiration_month: 'required|string|min:1|max:2',
+                expiration_year: 'required|string|min:4|max:4',
+                email: 'required|string|min:5|max:100',
+            };
+            validation = (0, validator_1.validate)(data, rules);
+            if (validation === true) {
+                return [2 /*return*/, {
+                        statusCode: 200,
+                        body: JSON.stringify({
+                            message: "Token created.",
+                            input: {},
+                        }),
+                    }];
+            }
+            else {
+                throw new Error(validation);
+            }
+        }
+        catch (e) {
+            return [2 /*return*/, {
+                    statusCode: 422,
+                    body: JSON.stringify({
+                        error: 'Unprocessable Content',
+                        message: e.message
+                    }),
+                }];
+        }
+        return [2 /*return*/];
     });
 }); };
 exports.handler = handler;
