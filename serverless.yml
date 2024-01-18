@@ -7,13 +7,13 @@ provider:
 
 functions:
   create-token:
-    handler: index.createToken
+    handler: index.tokenizerCreateTokenHandler
     events:
       - httpApi:
           path: /api/tokenizer/create-token
           method: POST
   get-card-info:
-    handler: index.getCardInfo
+    handler: index.tokenizerGetCardDataHandler
     events:
       - httpApi:
           path: /api/tokenizer/card-info
