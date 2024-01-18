@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCardInfo = exports.createToken = void 0;
-var createToken_1 = require("./src/functions/createToken");
-Object.defineProperty(exports, "createToken", { enumerable: true, get: function () { return createToken_1.handler; } });
-var getCardInfo_1 = require("./src/functions/getCardInfo");
-Object.defineProperty(exports, "getCardInfo", { enumerable: true, get: function () { return getCardInfo_1.handler; } });
+exports.tokenizerGetCardDataHandler = exports.tokenizerCreateTokenHandler = void 0;
+var handler_1 = require("./src/functions/tokenizer/handler");
+Object.defineProperty(exports, "tokenizerCreateTokenHandler", { enumerable: true, get: function () { return handler_1.tokenizerCreateTokenHandler; } });
+Object.defineProperty(exports, "tokenizerGetCardDataHandler", { enumerable: true, get: function () { return handler_1.tokenizerGetCardDataHandler; } });
 //# sourceMappingURL=index.js.map
