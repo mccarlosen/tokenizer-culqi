@@ -1,9 +1,15 @@
 {
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.131",
     "@types/node": "^20.11.5",
     "@types/serverless": "^3.12.20",
     "serverless-offline": "^13.3.2",
     "serverless-plugin-typescript": "^2.1.5",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@middy/core": "^5.2.3",
+    "@middy/http-json-body-parser": "^5.2.3",
+    "uuid": "^9.0.1"
   }
 }
