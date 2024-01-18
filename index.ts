@@ -1,7 +1,6 @@
-import {handler as createToken} from './src/functions/createToken'
-import {handler as getCardInfo} from './src/functions/getCardInfo'
+import { tokenizerCreateTokenHandler, tokenizerGetCardDataHandler } from './src/functions/tokenizer/handler'
 
 export { 
-	createToken,
-	getCardInfo,
+	tokenizerCreateTokenHandler,
+	tokenizerGetCardDataHandler,
 }
