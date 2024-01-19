@@ -55,7 +55,7 @@ export const tokenizerCreateTokenHandler = async (event: APIGatewayProxyEvent): 
   }
 }
 
-export const tokenizerGetCardDataHandler = async (event): Promise<APIGatewayProxyResult> => {
+export const tokenizerGetCardDataHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const { headers, pathParameters } = event
 
   if (useHeaderValidate(headers, 'Authorization') == null || useHeaderValidate(headers, 'Authorization') === undefined) {
@@ -64,15 +64,18 @@ export const tokenizerGetCardDataHandler = async (event): Promise<APIGatewayProx
   if (!useAuthorizationTokenValidate().check(headers.authorization)) {
     return useResponseJson({ error: 'Unauthorized.', message: 'Authorization token is invalid.' }, 401)
   }
-  const { token } = pathParameters
-  if (!useCardTokenValidate().isValid(token)) {
-    return useResponseJson({ error: 'Bad Request.', message: 'The token param is invalid.' }, 400)
+  if (pathParameters !== null) {
+    const { token } = pathParameters
+    if (!useCardTokenValidate().isValid(token)) {
+      return useResponseJson({ error: 'Bad Request.', message: 'The token param is invalid.' }, 400)
+    }
+    const cardModel = new CardModel(new RedisService())
+    const cardRepository = new CardRepository(cardModel)
+    const cardEntity = await cardRepository.getInfo(token)
+    if (cardEntity != null) {
+      return useResponseJson({ info: cardEntity }, 200)
+    }
+    return useResponseJson({ info: cardEntity, message: 'The card token has expired or not exist.' }, 200)
   }
-  const cardModel = new CardModel(new RedisService())
-  const cardRepository = new CardRepository(cardModel)
-  const cardEntity = await cardRepository.getInfo(token)
-  if (cardEntity != null) {
-    return useResponseJson({ info: cardEntity }, 200)
-  }
-  return useResponseJson({ info: cardEntity, message: 'The card token has expired or not exist.' }, 200)
+  return useResponseJson({ error: 'Bad Request.', message: 'The token param is missing.' }, 200)
 }
