@@ -1,12 +1,25 @@
-import { validateHeader } from "../../libs/headers.lib";
-import { validate } from "../../libs/validator.lib";
+require('dotenv').config();
+import { useHeaderValidate } from "../../libs/use-headers.lib";
+import { validate } from "../../libs/use-validator.lib";
 import { useResponseJson } from "../../libs/use-response-json.lib";
+import { CardRepository } from "../../repositories/card.repository";
+import { Card } from "../../entities/card";
+import { useCreateToken } from "../../libs/use-create-token.lib";
+import { RedisService } from "../../services/redis.service";
+import CardModel from "../../models/card.model";
+import { useCardTokenValidate } from "../../libs/use-card-token-validate.lib";
+import { useAuthorizationTokenValidate } from "../../libs/use-authorization-token-validate.lib";
 export const tokenizerCreateTokenHandler = async (event) => {
 	
-	if (!validateHeader(event.headers, 'Authorization')) {
+	const { headers } = event
+
+	if (!useHeaderValidate(headers, 'Authorization')) {
 		return useResponseJson({ error: 'Bad Request.', message: 'Authorization header is missing.' }, 400)
 	}
-	const contentType = validateHeader(event.headers, 'Content-Type')
+	if (!useAuthorizationTokenValidate().check(headers['authorization'])) {
+		return useResponseJson({ error: 'Unauthorized.', message: 'Authorization token is invalid.' }, 401)
+	}
+	const contentType = useHeaderValidate(headers, 'Content-Type')
 	if (!contentType) {
 		return useResponseJson({ error: 'Bad Request.', message: 'Content-Type header is missing.' }, 400)
 	}
@@ -17,45 +30,48 @@ export const tokenizerCreateTokenHandler = async (event) => {
 	try {
 		const data = JSON.parse(event.body)
 		const rules = {
-			card_number: 'required|numeric|min:13|max:16|luhnFormat',
+			cardNumber: 'required|numeric|min:13|max:16|luhnFormat',
 			cvv: 'required|numeric|min:3|max:4',
-			expiration_month: 'required|string|min:1|max:2',
-			expiration_year: 'required|string|min:4|max:4',
+			expirationMonth: 'required|string|min:1|max:2',
+			expirationYear: 'required|string|min:4|max:4',
 			email: 'required|string|min:5|max:100',
 		}
 		const validation = validate(data, rules);
 		if (validation === true) {
-			return {
-				statusCode: 200,
-				body: JSON.stringify({
-					message: "Token created.",
-					input: {},
-				}),
-			}
+			const { cardNumber, cvv, expirationMonth, expirationYear, email } = data
+			const token = useCreateToken(16)
+			const cardEntity = new Card()
+			cardEntity.cardNumber = cardNumber
+			cardEntity.cvv = cvv
+			cardEntity.expirationMonth = expirationMonth
+			cardEntity.expirationYear = expirationYear
+			cardEntity.email = email
+			cardEntity.token = token
+			const cardModel = new CardModel(new RedisService())
+			const cardRepository = new CardRepository(cardModel)
+			await cardRepository.save(cardEntity)
+			return useResponseJson({ token: token, message: 'The token has been created successful' }, 200)
 		} else {
 			throw new Error(validation);
 		}
 	} catch (e) {
-		return {
-			statusCode: 422,
-			body: JSON.stringify({
-				error: 'Unprocessable Content',
-				message: e.message
-			}),
-		};
+		return useResponseJson({ error: 'Unprocessable Content', message: e.message }, 422)
 	}
 };
 
 export const tokenizerGetCardDataHandler = async (event) => {
-	return {
-	  statusCode: 200,
-	  body: JSON.stringify(
-		{
-		  message: "Card information.",
-		  input: event,
-		},
-		null,
-		2
-	  ),
-	};
+
+	if (!useHeaderValidate(event.headers, 'Authorization')) {
+		return useResponseJson({ error: 'Bad Request.', message: 'Authorization header is missing.' }, 400)
+	}
+
+	const { token } = event.pathParameters
+	if (!useCardTokenValidate().isValid(token)) {
+		return useResponseJson({ error: 'Bad Request.', message: 'The token param is invalid.' }, 400)
+	}
+	const cardModel = new CardModel(new RedisService())
+	const cardRepository = new CardRepository(cardModel)
+	const cardEntity = await cardRepository.getInfo(token)
+	if (cardEntity) return useResponseJson({ info: cardEntity }, 200)
+	if (!cardEntity) return useResponseJson({ info: cardEntity, message: 'The card token has expired or not exist.' }, 200)
 };
