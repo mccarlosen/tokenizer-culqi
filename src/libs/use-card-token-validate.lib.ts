@@ -1,10 +1,10 @@
 import TokenizerConfig from '../config/tokenizer.config'
 interface CardTokenValidator {
-  isValid: (token: string) => boolean
+  isValid: (token: string | undefined) => boolean
 }
 
 export const useCardTokenValidate = (): CardTokenValidator => {
-  const isValid = (token: string): boolean => {
+  const isValid = (token: string | undefined): boolean => {
     if (!(String(token).length === TokenizerConfig.TOKENIZER_TOKEN_LENGTH)) {
       return false
     }
