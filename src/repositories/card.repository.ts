@@ -11,7 +11,7 @@ export class CardRepository implements CardRepositoryInterface {
     return cardEntity
   }
 
-  async getInfo (token: string): Promise<CardInterface | null> {
+  async getInfo (token: string | undefined): Promise<CardInterface | null> {
     const cardEntity = await this.cardModel.find(token)
     return cardEntity
   }
