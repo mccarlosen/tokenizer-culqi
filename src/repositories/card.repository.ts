@@ -1,21 +1,18 @@
-import TokenizerConfig from "../config/tokenizer.config";
-import { CardInterface } from "../interfaces/card.interface";
-import { CardRepositoryInterface } from "../interfaces/card.repository.interface";
-import CardModel from "../models/card.model";
+import { CardInterface } from '../interfaces/card.interface'
+import { CardModelInterface } from '../interfaces/card.model.interface'
+import { CardRepositoryInterface } from '../interfaces/card.repository.interface'
 
 export class CardRepository implements CardRepositoryInterface {
+  constructor (private readonly cardModel: CardModelInterface) {}
+  async save (card: CardInterface): Promise<CardInterface> {
+    const { cardNumber, cvv, expirationMonth, expirationYear, email, token } = card
+    const cardData = { cardNumber, cvv, expirationMonth, expirationYear, email, token }
+    const cardEntity = await this.cardModel.save(cardData)
+    return cardEntity
+  }
 
-	constructor(private cardModel: CardModel) {}
-	async save(card: CardInterface): Promise<CardInterface> {
-		const { cardNumber, cvv, expirationMonth, expirationYear, email, token } = card
-		const cardData = { cardNumber, cvv, expirationMonth, expirationYear, email, token }	
-		let cardEntity = await this.cardModel.save(cardData)
-		return cardEntity
-	}
-
-	async getInfo(token: string): Promise<CardInterface | null> {
-		let cardEntity = await this.cardModel.find(token)
-		return cardEntity
-	}
-
+  async getInfo (token: string): Promise<CardInterface | null> {
+    const cardEntity = await this.cardModel.find(token)
+    return cardEntity
+  }
 }
