@@ -8,6 +8,7 @@ export const useAuthorizationTokenValidate = (): AuthorizationTokenValidator => 
     }
     const [, bearerToken] = tokenValue.split(' ')
     const regex = /^pk_test_[a-zA-Z0-9]{16}$/
+
     return regex.test(bearerToken)
   }
 
