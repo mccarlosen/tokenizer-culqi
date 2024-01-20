@@ -12,11 +12,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
 export const tokenizerCreateTokenHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const { headers } = event
-
   if (useHeaderValidate(headers, 'Authorization') === null || useHeaderValidate(headers, 'Authorization') === undefined) {
     return useResponseJson({ error: 'Bad Request.', message: 'Authorization header is missing.' }, 400)
   }
-  if (useAuthorizationTokenValidate().check(headers.authorization) == null) {
+  if (!useAuthorizationTokenValidate().check(headers.authorization)) {
     return useResponseJson({ error: 'Unauthorized.', message: 'Authorization token is invalid.' }, 401)
   }
   const contentType = useHeaderValidate(headers, 'Content-Type')
@@ -33,8 +32,8 @@ export const tokenizerCreateTokenHandler = async (event: APIGatewayProxyEvent): 
       cardNumber: 'required|numeric|min:13|max:16|luhnFormat',
       cvv: 'required|numeric|min:3|max:4',
       expirationMonth: 'required|string|min:1|max:2',
-      expirationYear: 'required|string|min:4|max:4',
-      email: 'required|string|min:5|max:100'
+      expirationYear: 'required|string|min:4|max:4|validityYear:5',
+      email: 'required|string|min:5|max:100|emailFormat|emailDomainSupport:gmail.com:hotmail.com:yahoo.es'
     }
     useValidate(data, rules)
     const { cardNumber, cvv, expirationMonth, expirationYear, email } = data
