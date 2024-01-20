@@ -1,4 +1,7 @@
+import { emailDomainSupport } from './email-domain-support.lib'
+import { emailFormat } from './email-format.lib'
 import { luhnVerify } from './luhn-verify.lib'
+import { validityYear } from './validity-year.lib'
 
 const validateRule = (value: any, rule: string, params: string[]): boolean => {
   switch (rule) {
@@ -14,6 +17,12 @@ const validateRule = (value: any, rule: string, params: string[]): boolean => {
       return String(value).length <= parseInt(params[0], 10)
     case 'luhnFormat':
       return luhnVerify(value)
+    case 'validityYear':
+      return validityYear(value, parseInt(params[0], 10))
+    case 'emailFormat':
+      return emailFormat(value)
+    case 'emailDomainSupport':
+      return emailDomainSupport(value, ...params)
     default:
       return true
   }
