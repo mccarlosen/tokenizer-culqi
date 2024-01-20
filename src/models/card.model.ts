@@ -6,7 +6,7 @@ import TokenizerConfig from '../config/tokenizer.config'
 class CardModel implements CardModelInterface {
   constructor (private readonly redisService: RedisService) {
     this.connect()
-      .then(() => console.log('connected'))
+      .then(() => {})
       .catch((e) => { throw new Error(e.message) })
   }
 
