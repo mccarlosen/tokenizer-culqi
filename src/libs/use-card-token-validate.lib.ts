@@ -5,10 +5,10 @@ interface CardTokenValidator {
 
 export const useCardTokenValidate = (): CardTokenValidator => {
   const isValid = (token: string | undefined): boolean => {
-    if (!(String(token).length === TokenizerConfig.TOKENIZER_TOKEN_LENGTH)) {
+    if ((String(token).length !== TokenizerConfig.TOKENIZER_TOKEN_LENGTH)) {
       return false
     }
-    if (!(/[a-zA-Z]/.test(String(token)) && /\d/.test(String(token)))) {
+    if (!/[a-z]/.test(String(token)) || !/[A-Z]/.test(String(token)) || !/\d/.test(String(token))) {
       return false
     }
     return true
