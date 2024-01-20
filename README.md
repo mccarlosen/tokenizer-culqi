@@ -1,92 +1,66 @@
-<!--
-title: 'AWS Simple HTTP Endpoint example in NodeJS'
-description: 'This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: nodeJS
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Tokenización de Tarjetas
 
-# Serverless Framework Node HTTP API on AWS
+Las pasarelas de pagos guardan las tarjetas de crédito en una bóveda encriptada (encriptación en reposo) para evitar que la información sensible se pueda filtrar o que pueda ser interceptada en otro proceso del sistema.
 
-This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.
+El proceso de tokenización funciona enviando los datos de la tarjeta al tokenizador, este valida y guarda la información en la BD encriptada y devuelve un ID (token) como llave del registro el cual puede ser usado luego en los distintos procesos de culqi.
 
-This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/) which includes Typescript, Mongo, DynamoDB and other examples.
+En el siguiente gráfico puedes ver donde se usa este API de tokenización en el proceso de autorización de una tarjeta de crédito.
 
-## Usage
+### Tecnologías Utilizadas
 
-### Deployment
+- Backend: NodeJS Typescript
+- BD no relacional: Redis
+- Test: Jest Typescript
 
-```
-$ serverless deploy
-```
+## Uso
 
-After deploying, you should see output similar to:
+Antes que nada clone el repositorio con `git clone` en su computadora o equipo de trabajo.
+
+### Instalar dependencias
 
 ```bash
-Deploying aws-node-http-api-project to stage dev (us-east-1)
-
-✔ Service deployed to stack aws-node-http-api-project-dev (152s)
-
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: aws-node-http-api-project-dev-hello (1.9 kB)
+$ cd tokenizer-culqi
+$ yarn ó npm install
 ```
 
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [http event docs](https://www.serverless.com/framework/docs/providers/aws/events/apigateway/).
+### Instalación de Redis:
 
-### Invocation
-
-After successful deployment, you can call the created application via HTTP:
+Este proyecto usa `redis` como base de datos. Asegúrate de tenerlo instalador en tu equipo de desarrollo. Esta aplicación se conectará usando los parámetros por defecto de `redis`.
 
 ```bash
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
+# .env
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
 ```
 
-Which should result in response similar to the following (removed `input` content for brevity):
-
-```json
-{
-  "message": "Go Serverless v2.0! Your function executed successfully!",
-  "input": {
-    ...
-  }
-}
-```
-
-### Local development
-
-You can invoke your function locally by using the following command:
+También existen otra variables de entornos para configurar cosas más expecíficas de la aplicación:
 
 ```bash
-serverless invoke local --function hello
+# .env
+TOKENIZER_EXPIRATION_TOKEN=900 # in seconds = 15 min
+TOKENIZER_TOKEN_LENGTH=16
 ```
 
-Which should result in response similar to the following:
+### Ejecutando la aplicación
 
-```
-{
-  "statusCode": 200,
-  "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": \"\"\n}"
-}
-```
+Una vez instaladas todas las dependencias ejecute los siguientes comandos:
 
-
-Alternatively, it is also possible to emulate API Gateway and Lambda locally by using `serverless-offline` plugin. In order to do that, execute the following command:
+#### Ejecute los test para validar que todo va como debe:
 
 ```bash
-serverless plugin install -n serverless-offline
+yarn run test
 ```
 
-It will add the `serverless-offline` plugin to `devDependencies` in `package.json` file as well as will add it to `plugins` in `serverless.yml`.
+#### Ejecute la aplicación localmente (modo offline):
 
-After installation, you can start local emulation with:
+Esto levantará un servidor local que simulará en entorno de API Gateway Service.
 
+```bash
+yarn run dev
 ```
-serverless offline
-```
 
-To learn more about the capabilities of `serverless-offline`, please refer to its [GitHub repository](https://github.com/dherault/serverless-offline).
+#### Desplegar la aplicación en la nube:
+
+```bash
+yarn run deploy
+```
